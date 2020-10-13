@@ -15,12 +15,65 @@ from django.views.generic import ListView, DetailView, View
 from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
 from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile
 
+
+from django.core.mail import send_mail
+from django.http import HttpResponse # Add this
+
+from .forms import ContactForm # Add this
+
+from django.db.models import Q
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def contact_us(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            # send email code goes here
+            sender_name = form.cleaned_data['name']
+            sender_email = form.cleaned_data['email']
+
+            message = "{0} with mail ID {1} has sent you a new message:\n\n{2}".format(sender_name, sender_email, form.cleaned_data['message'])
+            send_mail('New Enquiry', message, sender_email, ['varmasangaraju4444@gmail.com'])
+
+            return HttpResponse('Thanks for contacting us!')
+    else:
+        form = ContactForm()
+
+    return render(request, 'contact-us.html', {'form': form})
 
 
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
+
+class KitchenView(ListView):
+    model = Item
+    paginate_by = 10
+    template_name = "kitchen.html"
+
+class BRView(ListView):
+    model = Item
+    paginate_by = 10
+    template_name = "bedroom.html"
+
+class LRView(ListView):
+    model = Item
+    paginate_by = 10
+    template_name = "livingroom.html"
+
+
+class SearchResultsView(ListView):
+    model = Item
+    template_name = 'search_results.html'
+
+    def get_queryset(self): # new
+        query = self.request.GET.get('q')
+        object_list = Item.objects.filter(
+            Q(title__icontains=query) | Q(category__icontains=query) | Q(label__icontains=query) | Q(description__icontains=query)
+        )
+        return object_list
 
 def products(request):
     context = {
