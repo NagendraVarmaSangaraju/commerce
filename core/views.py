@@ -48,20 +48,20 @@ def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
 
-class KitchenView(ListView):
+class Home1View(ListView):
     model = Item
     paginate_by = 10
-    template_name = "kitchen.html"
+    template_name = "home1.html"
 
-class BRView(ListView):
+class OfficeView(ListView):
     model = Item
     paginate_by = 10
-    template_name = "bedroom.html"
+    template_name = "office.html"
 
-class LRView(ListView):
-    model = Item
-    paginate_by = 10
-    template_name = "livingroom.html"
+# class LRView(ListView):
+#     model = Item
+#     paginate_by = 10
+#     template_name = "livingroom.html"
 
 
 class SearchResultsView(ListView):

@@ -26,17 +26,17 @@
 
                         </a>
                     </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/kitchen">Kitchen</a>
-                        <span class="sr-only">(current)</span>
+                    <li class="nav-item ">
+                        <a class="nav-link" href="/home1">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/bedroom">BedRoom
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/office">Office
+                            <span class="sr-only">(current)</span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="/livingroom">Living Room</a>
-                    </li>
+                    </li> -->
 
                 </ul>
                 <!-- Links -->
@@ -58,7 +58,7 @@
             <div class="row wow fadeIn">
 
                 {% for item in object_list %}
-                {%  if item.get_category_display == 'Kitchen' %}
+                {%  if item.get_category_display == 'office' %}
                 <div class="col-lg-3 col-md-6 mb-4">
 
                     <div class="card">
@@ -99,8 +99,9 @@
 
 
                     </div>
-                    {% endif %}
+
                 </div>
+                {% endif %}
                 {% endfor %}
             </div>
 

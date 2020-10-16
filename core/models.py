@@ -7,9 +7,9 @@ from django_countries.fields import CountryField
 
 
 CATEGORY_CHOICES = (
-    ('K', 'Kitchen'),
-    ('BR', 'Bed Room'),
-    ('LR', 'Living Room')
+    ('H', 'Home'),
+    ('O', 'office'),
+    # ('LR', 'Living Room')
 )
 
 LABEL_CHOICES = (

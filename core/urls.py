@@ -11,9 +11,9 @@ from .views import (
     PaymentView,
     AddCouponView,
     RequestRefundView,
-    KitchenView,
-    BRView,
-    LRView,
+    Home1View,
+    OfficeView,
+    # LRView,
     SearchResultsView,
 )
 
@@ -32,9 +32,9 @@ urlpatterns = [
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund'),
 
-    path('kitchen/',KitchenView.as_view(),name='kitchen'),
-    path('bedroom/',BRView.as_view(),name='bedroom'),
-    path('livingroom/',LRView.as_view(),name='livingroom'),
+    path('home1/',Home1View.as_view(),name='home1'),
+    path('office/',OfficeView.as_view(),name='office'),
+    # path('livingroom/',LRView.as_view(),name='livingroom'),
     path('contact-us/',views.contact_us,name='contact_us'),
     path('search_results/', SearchResultsView.as_view(), name='search_results'),
 ]
