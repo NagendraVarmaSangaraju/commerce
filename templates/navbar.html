@@ -1,6 +1,6 @@
 {% load cart_template_tags %}
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar" style="background-color: green;">
   <div class="container">
 
     <!-- Brand -->
@@ -46,6 +46,17 @@
           </a>
         </li>
         {% else %}
+
+        <li class="nav-item">
+          <a class="nav-link waves-effect" href="/aboutus">
+            <span class="clearfix d-none d-sm-inline-block"> About Us </span>
+          </a>
+        </li>
+
+        <form action="/search_results" method="get">
+          <input name="q" type="text" placeholder="Search Products..">
+        </form>
+
         <li class="nav-item">
           <a class="nav-link waves-effect" href="{% url 'account_login' %}">
             <span class="clearfix d-none d-sm-inline-block"> Login </span>
@@ -56,6 +67,7 @@
             <span class="clearfix d-none d-sm-inline-block"> Signup </span>
           </a>
         </li>
+
         {% endif %}
       </ul>
     </div>
