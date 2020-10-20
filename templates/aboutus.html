@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<style>
+  .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0);
+    margin: 2px;
+  }
+
+  .about-section {
+    padding: 50px;
+    text-align: center;
+    background-color: #474e5d;
+    color: white;
+  }
+
+
+
+  .title {
+    color: grey;
+  }
+
+
+  @media screen and (max-width: 650px) {
+    .column {
+      width: 100%;
+      display: block;
+    }
+  }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="about-section">
+      <h1>About Us</h1>
+      <p><i> ErgoLife - The eCommerce world of ergonomics!. Our goal is to decrease the ergonomic risk for people
+          working
+          at home or office. </i></p>
+    </div>
+    <br>
+    <h2 style="text-align:center">Our Team</h2>
+    </br>
+    <div class="row">
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Female.jpg" alt="Akhila" style="width:50%">
+          <div class="container">
+            <h4>Akhila Ginna</h4>
+            <p class="title">Web Designer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Female.jpg" alt="Brianna" style="width:50%">
+          <div class="container">
+            <h4>Brianna Cook</h4>
+            <p class="title">Business Analyst</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Male.jpg" alt="Kiran" style="width:50% ">
+          <div class="container">
+            <h4>Kiran Sadananda</h4>
+            <p class="title">Web Developer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Female.jpg" alt="Lauren" style="width:50%">
+          <div class="container">
+            <h4>Lauren Fleiszig</h4>
+            <p class="title">Business Analyst</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Female.jpg" alt="Sravnathi" style="width:50%">
+          <div class="container">
+            <h4>Naga Sravanthi</h4>
+            <p class="title">Web Designer</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="card">
+          <img src="/media_root/Male.jpg" alt="Varma" style="width:50% ">
+          <div class="container">
+            <h4>Nagendra Varma</h4>
+            <p class="title">Web Developer</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+{% endblock content %}

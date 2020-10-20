@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .about-section {
+        padding: 50px;
+        text-align: center;
+        background-color: #474e5d;
+        color: white;
+    }
+</style>
 
-<main class="mt-5 pt-4">
+<main class="mt-3">
     <div class="container dark-grey-text mt-5">
-
-        <h2>Contact Us</h2>
+        <div class="about-section">
+            <h1>Contact US</h1>
+            <p><i> Do you have any queries or suggestions?
+                    Please submit your feedback here. </i></p>
+        </div>
+        <br>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}

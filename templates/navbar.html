@@ -1,6 +1,6 @@
 {% load cart_template_tags %}
 
-<nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar" style="background-color: green;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
   <div class="container">
 
     <!-- Brand -->
@@ -34,6 +34,21 @@
       <ul class="navbar-nav nav-flex-icons">
         {% if request.user.is_authenticated %}
         <li class="nav-item">
+          <a class="nav-link waves-effect" href="/aboutus">
+            <span class="clearfix d-none d-sm-inline-block"> About Us </span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link waves-effect" href="/locateus">
+            <span class="clearfix d-none d-sm-inline-block"> Store Locator</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <form action="/search_results" method="get">
+            <input name="q" type="text" placeholder="Search Products...">
+          </form>
+        </li>
+        <li class="nav-item">
           <a href="{% url 'core:order-summary' %}" class="nav-link waves-effect">
             <span class="badge red z-depth-1 mr-1"> {{ request.user|cart_item_count }} </span>
             <i class="fas fa-shopping-cart"></i>
@@ -52,10 +67,16 @@
             <span class="clearfix d-none d-sm-inline-block"> About Us </span>
           </a>
         </li>
-
-        <form action="/search_results" method="get">
-          <input name="q" type="text" placeholder="Search Products..">
-        </form>
+        <li class="nav-item">
+          <a class="nav-link waves-effect" href="/locateus">
+            <span class="clearfix d-none d-sm-inline-block"> Store Locator</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <form action="/search_results" method="get">
+            <input name="q" type="text" placeholder="Search Products...">
+          </form>
+        </li>
 
         <li class="nav-item">
           <a class="nav-link waves-effect" href="{% url 'account_login' %}">

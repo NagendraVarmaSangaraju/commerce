@@ -43,6 +43,12 @@ def contact_us(request):
 
     return render(request, 'contact-us.html', {'form': form})
 
+def locateus(request):
+    return render(request, 'locateus.html')
+
+def aboutus(request):
+    return render(request, 'aboutus.html')
+
 
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))

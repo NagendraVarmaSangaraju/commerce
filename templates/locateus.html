@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head>
+    <title>map test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style type="text/css">
+        /* map needs width and height to appear */
+        #info_div {
+            width: 200px;
+            max-width: 100%;
+            height: 500px;
+        }
+
+        #map {
+            width: 900px;
+            max-width: 100%;
+            height: 500px;
+        }
+
+        .map-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .store-name {
+            display: block;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .locator-heading {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            height: 36px;
+            line-height: 36px;
+            padding: 0 10px;
+        }
+
+        .locator-heading h2 {
+            font-size: 20px;
+            margin: 0;
+            font-weight: 400;
+            color: #333;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="map-container">
+            <!-- this div will hold your store info -->
+            <div id="info_div">
+                <div class="locator-heading">
+                    <h2>Store locations</h2>
+                </div>
+            </div>
+            <!-- this div will hold your map -->
+            <div id="map"></div>
+        </div>
+
+    </div>
+    <script>
+        function initMap() {
+            const myMapCenter = { lat: 45.4228953, lng: -75.6551358 };
+
+            // Create a map object and specify the DOM element for display.
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: myMapCenter,
+                zoom: 12
+            });
+
+            const infoWindow = new google.maps.InfoWindow();
+
+            function markStore({ name, description, hours, phone, location }) {
+                console.log("Logged");
+                // Create a marker and set its position.
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: location,
+                    title: name
+                });
+
+                // show store info when marker is clicked
+                marker.addListener('click', function () {
+                    showStoreInfo({ name, description, hours, phone, location });
+                    map.setCenter(marker.getPosition());
+                });
+            }
+
+            // show store info in text box
+            function showStoreInfo({ name, description, hours, phone, location }) {
+                // const name = event.feature.getProperty('name');
+                const content = `
+		<h2>${name}</h2><p>${description}</p>
+		<p><b>Open:</b> ${hours}<br/><b>Phone:</b> ${phone}</p>`;
+                infoWindow.setContent(content);
+                infoWindow.setPosition(location);
+                infoWindow.setOptions({ pixelOffset: new google.maps.Size(0, -30) });
+                map.setZoom(16);
+                infoWindow.open(map);
+            }
+            function showStoreList({ name, description, hours, phone, location }) {
+
+                var para = document.createElement("p");
+                para.className = "store-name";
+                para.onclick = function () { showStoreInfo({ name, description, hours, phone, location }) };
+                para.innerHTML = 'Store name: '
+                    + name
+                    + '<br>Hours: ' + hours + '<br>';
+                var info_div = document.getElementById('info_div');
+                info_div.appendChild(para);
+            }
+
+            var stores = [
+                {
+                    category: "Show-room",
+                    hours: "10a.m. - 9:30p.m.",
+                    location: { lat: 45.4146985, lng: -75.6467312 },
+                    description: "Furniture with an ease of comfort",
+                    name: "store-1",
+                    phone: "+44 1717 17171",
+                    storeid: "1"
+                },
+                {
+                    category: "Show-room & warehouse",
+                    hours: "8a.m. - 9:30p.m.",
+                    location: { lat: 45.4228953, lng: -75.6551358 },
+                    description: "Filling the home with the beautiful creation of wood",
+                    name: "store-2",
+                    phone: "+44 1717 17171",
+                    storeid: "2"
+                },
+                {
+                    category: "Show-room & warehouse",
+                    hours: "8a.m. - 9:00p.m.",
+                    location: { lat: 45.342938, lng: -75.711372 },
+                    description: "Filling the home with the beautiful creation of wood",
+                    name: "store-3",
+                    phone: "+44 1717 17171",
+                    storeid: "2"
+                },
+                {
+                    category: "Show-room",
+                    hours: "10a.m. - 9:30p.m.",
+                    location: { lat: 45.439271, lng: -75.598850 },
+                    description: "Filling the home with the beautiful creation of wood",
+                    name: "store-4",
+                    phone: "+44 1717 17171",
+                    storeid: "2"
+                }
+            ];
+
+            stores.forEach(function (store) {
+                markStore(store);
+                showStoreList(store);
+            });
+
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHWpRc8DCOXZlAgFVuDWZUS_tocbPsgfc&callback=initMap"
+        async defer></script>
+
+    {% endblock content %}
+
+
+</body>

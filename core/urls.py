@@ -15,6 +15,7 @@ from .views import (
     OfficeView,
     # LRView,
     SearchResultsView,
+    
 )
 
 app_name = 'core'
@@ -37,4 +38,6 @@ urlpatterns = [
     # path('livingroom/',LRView.as_view(),name='livingroom'),
     path('contact-us/',views.contact_us,name='contact_us'),
     path('search_results/', SearchResultsView.as_view(), name='search_results'),
+    path('locateus/',views.locateus,name='locateus'),
+    path('aboutus/',views.aboutus,name='aboutus'),
 ]
