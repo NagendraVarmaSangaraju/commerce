@@ -25,21 +25,155 @@ from django.db.models import Q
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+from django.contrib.auth import login, authenticate
+from django.shortcuts import render, redirect
+
+from core.forms import SignUpForm, ProfileForm
+
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from core.tokens import account_activation_token
+from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.template.loader import render_to_string
+from core.tokens import account_activation_token
+from django.core.mail import EmailMessage
+from django.contrib.auth.models import User
+
+def signup(request):
+    if request.method == 'POST':
+        form2 = ProfileForm(request.POST)
+        form1 = SignUpForm(request.POST)
+        if form1.is_valid() and form2.is_valid():
+            # form1.save()
+            
+            # user = form1.save()
+            # form2 = form2.save(commit=False)
+            # form2.user = user
+            # form2.save()
+
+            user = form1.save(commit=False)
+            user.is_active = False # Deactivate account till it is confirmed
+            user.save()
+            form2 = form2.save(commit=False)
+            form2.user = user
+            form2.save()
+
+            current_site = get_current_site(request)
+            mail_subject = 'Activate your Ergo Life Account.'
+            message = render_to_string('account/email_confirmation_message.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                'token':account_activation_token.make_token(user),
+            })
+            to_email = form1.cleaned_data.get('email')
+            email = EmailMessage(
+                        mail_subject, message, to=[to_email]
+            )
+            email.send()
+            messages.success(request, ('Please Confirm your email to complete registration. You are able to login once your email gets verified'))  
+            # return HttpResponse('Please confirm your email address to complete the registration')
+            return redirect('/')
+            # current_site = get_current_site(request)
+            # subject = 'Activate Your ErgoLife Account'
+            # message = render_to_string('account/email_confirmation_message.html', {
+            #     'user': user,
+            #     'domain': current_site.domain,
+            #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            #     'token': account_activation_token.make_token(user),
+            # })
+            # user.email_user(subject, message)
+            # form2.save()
+            # messages.success(request, ('Please Confirm your email to complete registration.'))
+            
+            
+            # messages.success(request, f'Registration complete! You may log in!')
+            # username = form1.cleaned_data.get('username')
+            # raw_password = form1.cleaned_data.get('password1')
+            # user = authenticate(username=username, password=raw_password)
+            # login(request, user)
+            
+            # return redirect('home')
+            # return redirect('/')
+    else:
+        form2 = ProfileForm()
+        form1 = SignUpForm()
+    return render(request, 'signup.html', {'form1': form1,'form2':form2})
+
+
+def activate(request, uidb64, token,backend='django.contrib.auth.backends.ModelBackend'):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.profile.email_confirmed = True
+        user.save()
+        login(request, user,backend='django.contrib.auth.backends.ModelBackend')
+        # return redirect('home')
+        messages.success(request, ('Your account have been confirmed.'))
+        return redirect('/')
+        # return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+    else:
+        messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+        return redirect('/')
+
+# class ActivateAccount(View):
+
+#     def get(self, request, uidb64, token, *args, **kwargs):
+#         try:
+#             uid = force_text(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#             user = None
+
+#         if user is not None and account_activation_token.check_token(user, token):
+#             user.is_active = True
+#             user.profile.email_confirmed = True
+#             user.save()
+#             login(request, user)
+#             messages.success(request, ('Your account have been confirmed.'))
+#             return redirect('home')
+#         else:
+#             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+#             return redirect('home')
+
 
 def contact_us(request):
     if request.method == 'POST':
         form = ContactForm(request.POST)
         if form.is_valid():
             # send email code goes here
-            sender_name = form.cleaned_data['name']
-            sender_email = form.cleaned_data['email']
-
+            if request.user.is_authenticated:
+                sender_name = request.user.first_name
+                sender_email = request.user.email
+            else:
+                sender_name = form.cleaned_data['name']
+                sender_email = form.cleaned_data['email']
             message = "{0} with mail ID {1} has sent you a new message:\n\n{2}".format(sender_name, sender_email, form.cleaned_data['message'])
             send_mail('New Enquiry', message, sender_email, ['varmasangaraju4444@gmail.com'])
 
-            return HttpResponse('Thanks for contacting us!')
+            return HttpResponse('Thanks for reaching out to us! We will contact you soon. You can close this window!')
     else:
-        form = ContactForm()
+        if request.user.is_authenticated:
+            form = ContactForm(
+            initial={
+                'name': request.user.first_name,
+                'email': request.user.email,
+                # 'body': get_issue_body
+                },
+            )
+            form.fields['name'].widget.attrs['readonly'] = True,
+            form.fields['email'].widget.attrs['readonly'] = True
+        # name = request.user
+        # email = request.user.email
+        else:
+            form = ContactForm()
 
     return render(request, 'contact-us.html', {'form': form})
 
@@ -432,27 +566,38 @@ class ItemDetailView(DetailView):
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     order_item, created = OrderItem.objects.get_or_create(
-        item=item,
-        user=request.user,
-        ordered=False
+    item=item,
+    user=request.user,       
+        # quantity = 1,
+    ordered=False
     )
     order_qs = Order.objects.filter(user=request.user, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
         # check if the order item is in the order
         if order.items.filter(item__slug=item.slug).exists():
-            order_item.quantity += 1
-            order_item.save()
-            messages.info(request, "This item quantity was updated.")
-            return redirect("core:order-summary")
+            if request.user.profile.account_type == "Business":
+                # order_item.quantity += 25
+                order_item.quantity += 1
+                order_item.save()
+                messages.info(request, "This item quantity was updated.")
+                return redirect("core:order-summary")
+            else:
+                order_item.quantity += 1
+                order_item.save()
+                messages.info(request, "This item quantity was updated.")
+                return redirect("core:order-summary")
         else:
-            order.items.add(order_item)
+            if request.user.profile.account_type == "Business":
+                order_item.quantity = 25
+                order_item.save()
+            order.items.add(order_item) 
             messages.info(request, "This item was added to your cart.")
             return redirect("core:order-summary")
     else:
         ordered_date = timezone.now()
         order = Order.objects.create(
-            user=request.user, ordered_date=ordered_date)
+             user=request.user, ordered_date=ordered_date)
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
         return redirect("core:order-summary")
@@ -502,12 +647,26 @@ def remove_single_item_from_cart(request, slug):
                 user=request.user,
                 ordered=False
             )[0]
-            if order_item.quantity > 1:
-                order_item.quantity -= 1
-                order_item.save()
+            if request.user.profile.account_type == "Business":
+                if order_item.quantity >= 25:
+                    if (order_item.quantity - 1 < 25):
+                        messages.info(request, "Quanity should be minimum 25")
+                        
+                    else:
+                        order_item.quantity -= 1
+                        order_item.save()
+                        messages.info(request, "This item quantity was updated.")
+
+                else:
+                    order.items.remove(order_item)
             else:
-                order.items.remove(order_item)
-            messages.info(request, "This item quantity was updated.")
+                if order_item.quantity > 1:
+                    order_item.quantity -= 1
+                    order_item.save()
+                    messages.info(request, "This item quantity was updated.")
+                else:
+                    order.items.remove(order_item)
+                    messages.info(request, "This item quantity was updated.")
             return redirect("core:order-summary")
         else:
             messages.info(request, "This item was not in your cart")

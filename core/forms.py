@@ -1,7 +1,7 @@
 from django import forms
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
-
+from .models import Profile
 
 PAYMENT_CHOICES = (
     ('S', 'Credit'),
@@ -10,8 +10,45 @@ PAYMENT_CHOICES = (
 
 from django import forms
 
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
+
+class SignUpForm(UserCreationForm):
+    username = forms.CharField(max_length=30, required=False, help_text='Used for Login.')
+    first_name = forms.CharField(max_length=30, required=False, help_text='Your First Name.')
+    last_name = forms.CharField(max_length=30, required=False, help_text='Your Last Name.')
+    email = forms.EmailField(max_length=254, help_text='Required. Please input a valid email address.')
+    # Account = forms.CharField(max_length=30, required=False, help_text='Your Account Type.')
+    # CHOICES=[('Personal','Personal'),
+    #         ('Business','Business')]
+
+    # Account_Type = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
+    def clean(self):
+       email = self.cleaned_data.get('email')
+       username = self.cleaned_data.get('username')
+       if User.objects.filter(email=email).exists() and User.objects.filter(username=username).exists() :
+            raise ValidationError("Email and Username exists. Please try with different username and Email")
+       elif User.objects.filter(username=username).exists():
+            raise ValidationError("Useraname already exists. Please try with diifferent username")
+       elif User.objects.filter(email=email).exists():
+            raise ValidationError("Email exists. Please try with different email")
+       return self.cleaned_data
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', )
+
+class ProfileForm(forms.ModelForm):
+    # username = forms.CharField(max_length=30, required=False, help_text='Used for Login.')
+    class Meta:
+        model = Profile
+        fields = ['account_type']
+
+
 class ContactForm(forms.Form):
-    name = forms.CharField(max_length=100)
+    name = forms.CharField(max_length=150)
     email = forms.EmailField()
     message = forms.CharField(widget=forms.Textarea)
 

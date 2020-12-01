@@ -33,6 +33,7 @@
       <!-- Right -->
       <ul class="navbar-nav nav-flex-icons">
         {% if request.user.is_authenticated %}
+
         <li class="nav-item">
           <a class="nav-link waves-effect" href="/aboutus">
             <span class="clearfix d-none d-sm-inline-block"> About Us </span>
@@ -74,7 +75,7 @@
         </li>
         <li class="nav-item">
           <form action="/search_results" method="get">
-            <input name="q" type="text" placeholder="Search Products...">
+            <input name="q" type="text" placeholder="Search Products..." style="padding-top: 5px; padding-bottom: 5px;">
           </form>
         </li>
 
@@ -84,7 +85,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link waves-effect" href="{% url 'account_signup' %}">
+          <a class="nav-link waves-effect" href="/signup1">
             <span class="clearfix d-none d-sm-inline-block"> Signup </span>
           </a>
         </li>

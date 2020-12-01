@@ -1,0 +1,8 @@
+
+{% autoescape off %}
+Hi {{ user.username }},
+
+Please click on the link below to confirm your registration:
+
+http://localhost:8000{% url 'core:activate' uidb64=uid token=token %}
+{% endautoescape %}
