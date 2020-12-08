@@ -189,7 +189,7 @@ def create_ref_code():
 
 
 class Home1View(ListView):
-    model = Item
+    
     paginate_by = 10
     template_name = "home1.html"
 
@@ -694,8 +694,12 @@ class AddCouponView(View):
                 order = Order.objects.get(
                     user=self.request.user, ordered=False)
                 order.coupon = get_coupon(self.request, code)
-                order.save()
-                messages.success(self.request, "Successfully added coupon")
+                
+                if self.request.user.profile.account_type == "Business":
+                    messages.success(self.request, "Successfully added coupon")
+                    order.save()
+                else:
+                    messages.success(self.request, "Coupon cannot be added to personal accounts")
                 return redirect("core:checkout")
             except ObjectDoesNotExist:
                 messages.info(self.request, "You do not have an active order")

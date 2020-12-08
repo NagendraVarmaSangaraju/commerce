@@ -4,5 +4,18 @@ Hi {{ user.username }},
 
 Please click on the link below to confirm your registration:
 
+
+
+
+{% if user.profile.account_type == "Business" %}
 http://localhost:8000{% url 'core:activate' uidb64=uid token=token %}
+
+
+You can use promo code 'testing' at checkout to avail $20 off.
+{% endif %}
+
+{% if user.profile.account_type == "Personal" %}
+http://localhost:8000{% url 'core:activate' uidb64=uid token=token %}
+{% endif %}
+
 {% endautoescape %}
